@@ -1,8 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import {
-  LayoutDashboard, MessageSquare, ThumbsUp,
-  Zap, Users, Settings, User
-} from 'lucide-react'
+import { LayoutDashboard, MessageSquare, ThumbsUp, Zap, Users, Settings, LogOut } from 'lucide-react'
 
 const navItems = [
   { to: '/dashboard',   icon: LayoutDashboard, label: 'Home' },
@@ -12,7 +9,9 @@ const navItems = [
   { to: '/pipeline',    icon: Users,           label: 'Pipeline' },
 ]
 
-export default function Sidebar() {
+export default function Sidebar({ user, onLogout }) {
+  const initials = user?.name ? user.name.split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase() : 'WA'
+
   return (
     <nav style={{
       width: 'var(--nav-w)', minWidth: 'var(--nav-w)', height: '100vh',
@@ -20,7 +19,6 @@ export default function Sidebar() {
       display: 'flex', flexDirection: 'column', alignItems: 'center',
       padding: '16px 0', gap: 4, flexShrink: 0, zIndex: 10,
     }}>
-      {/* Logo */}
       <div style={{ marginBottom: 20 }}>
         <div style={{
           width: 40, height: 40, borderRadius: 12,
@@ -31,36 +29,25 @@ export default function Sidebar() {
         }}>W</div>
       </div>
 
-      {/* Nav items */}
       {navItems.map(({ to, icon: Icon, label }) => (
         <NavLink key={to} to={to} style={{ textDecoration: 'none' }}>
           {({ isActive }) => (
             <div style={{
               width: 48, height: 48, borderRadius: 14,
               display: 'flex', flexDirection: 'column', alignItems: 'center',
-              justifyContent: 'center', gap: 3, cursor: 'pointer',
-              transition: 'all 0.2s',
+              justifyContent: 'center', gap: 3, cursor: 'pointer', transition: 'all 0.2s',
               color: isActive ? 'var(--green)' : 'var(--text3)',
-              background: isActive
-                ? 'linear-gradient(135deg, rgba(0,212,160,0.15), rgba(59,130,246,0.1))'
-                : 'transparent',
-              border: isActive
-                ? '1px solid rgba(0,212,160,0.25)'
-                : '1px solid transparent',
-              boxShadow: isActive
-                ? '0 0 20px rgba(0,212,160,0.15)'
-                : 'none',
+              background: isActive ? 'linear-gradient(135deg, rgba(0,212,160,0.15), rgba(59,130,246,0.1))' : 'transparent',
+              border: isActive ? '1px solid rgba(0,212,160,0.25)' : '1px solid transparent',
+              boxShadow: isActive ? '0 0 20px rgba(0,212,160,0.15)' : 'none',
             }}>
               <Icon size={20} strokeWidth={1.8} />
-              <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: '0.3px' }}>
-                {label}
-              </span>
+              <span style={{ fontSize: 8, fontWeight: 600, letterSpacing: '0.3px' }}>{label}</span>
             </div>
           )}
         </NavLink>
       ))}
 
-      {/* Bottom */}
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
         <NavLink to="/settings" style={{ textDecoration: 'none' }}>
           {({ isActive }) => (
@@ -77,12 +64,26 @@ export default function Sidebar() {
             </div>
           )}
         </NavLink>
-        <div style={{
+
+        {/* Logout */}
+        <div onClick={onLogout} title="Logout" style={{
+          width: 34, height: 34, borderRadius: 10, cursor: 'pointer',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          color: 'var(--text3)', transition: 'all 0.2s', border: '1px solid transparent',
+        }}
+          onMouseEnter={e => { e.currentTarget.style.color = 'var(--red)'; e.currentTarget.style.borderColor = 'rgba(239,68,68,0.2)'; e.currentTarget.style.background = 'rgba(239,68,68,0.08)' }}
+          onMouseLeave={e => { e.currentTarget.style.color = 'var(--text3)'; e.currentTarget.style.borderColor = 'transparent'; e.currentTarget.style.background = 'transparent' }}
+        >
+          <LogOut size={16} strokeWidth={1.8} />
+        </div>
+
+        {/* User avatar */}
+        <div title={user?.name} style={{
           width: 32, height: 32, borderRadius: '50%',
           background: 'linear-gradient(135deg,#3b55d6,#00d4a0)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 11, fontWeight: 700, color: '#fff', cursor: 'pointer', marginTop: 4,
-        }}>SA</div>
+          fontSize: 11, fontWeight: 700, color: '#fff', cursor: 'pointer', marginTop: 2,
+        }}>{initials}</div>
       </div>
     </nav>
   )
